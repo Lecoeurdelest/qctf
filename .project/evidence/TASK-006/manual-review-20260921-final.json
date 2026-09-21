@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "TASK-006",
+  "review_kind": "manual_scaffold_completion_after_final_sync",
+  "source_hash": "f739430ddcabe8f1ea401674a048899c91667231fc312954510b8f440e0aa291",
+  "spec_hash": "bd94fdedde98f46c5d34592b108b88d33a907d83c086bf95abae25a25225f0f5",
+  "runner_report": "2026-09-21T12-23-46-928Z/report.json",
+  "criteria": [
+    {"id": "AC-011", "status": "pass", "basis": "Frontend and Go build/test checks passed"},
+    {"id": "AC-012", "status": "pass", "basis": "Compose startup, plugin tests, fresh bootstrap and live smoke checks passed"},
+    {"id": "AC-013", "status": "pass", "basis": "Plan validation, preservation audit and three-marker task-index audit passed"}
+  ],
+  "calibrated_logic_confidence": null,
+  "automatic_logic_gate": "inconclusive",
+  "notes": [
+    "This is a scaffold synchronization result, not a production-readiness result",
+    "REQ-001 through REQ-005 remain incomplete; TASK-001 is still in_progress",
+    "The visible task index uses stable evidence directories to avoid run-id drift",
+    "CTFd 3.8.7 is present under apps/ctfd/upstream and the qctf image imports it from /opt/CTFd",
+    "No Kubernetes workload, KoTH concurrency implementation, legacy migration or calibrated logic evaluator was exercised"
+  ]
+}

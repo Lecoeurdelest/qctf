@@ -1,0 +1,103 @@
+name: qctf
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: infra/gateway/Dockerfile
+    ports:
+      - "127.0.0.1:${QCTF_PORT:-8088}:8080"
+    depends_on:
+      ctfd:
+        condition: service_healthy
+    networks: [edge]
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1:8080/healthz]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+
+  ctfd:
+    build:
+      context: .
+      dockerfile: apps/ctfd/Dockerfile
+    environment:
+      SECRET_KEY: ${CTFD_SECRET_KEY:?Run make env first}
+      DATABASE_URL: mysql+pymysql://ctfd:${DB_PASSWORD:?Run make env first}@db/ctfd
+      REDIS_URL: redis://redis:6379/0
+      UPLOAD_FOLDER: /var/uploads
+      LOG_FOLDER: /var/log/CTFd
+      REVERSE_PROXY: "1"
+      PRESET_ADMIN_NAME: qctf-admin
+      PRESET_ADMIN_EMAIL: ${QCTF_ADMIN_EMAIL:-admin@qctf.local}
+      PRESET_ADMIN_PASSWORD: ${QCTF_ADMIN_PASSWORD:?Run make env first}
+      PRESET_ADMIN_TOKEN: ${QCTF_ADMIN_TOKEN:?Run make env first}
+      ORCHESTRATOR_URL: http://orchestrator:8081
+      ORCHESTRATOR_TOKEN: ${ORCHESTRATOR_TOKEN:?Run make env first}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      orchestrator:
+        condition: service_started
+    volumes:
+      - uploads:/var/uploads
+      - ctfd-logs:/var/log/CTFd
+    networks: [edge, data, control]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/qctf/v1/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 12
+
+  orchestrator:
+    build:
+      context: services/orchestrator
+    environment:
+      LISTEN_ADDR: :8081
+      ORCHESTRATOR_TOKEN: ${ORCHESTRATOR_TOKEN:?Run make env first}
+    networks: [control]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+
+  db:
+    image: mariadb:11.4.8
+    environment:
+      MARIADB_DATABASE: ctfd
+      MARIADB_USER: ctfd
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Run make env first}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Run make env first}
+    volumes:
+      - db:/var/lib/mysql
+    networks: [data]
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7.4-alpine
+    command: [redis-server, --save, "", --appendonly, "no"]
+    networks: [data]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db:
+  uploads:
+  ctfd-logs:
+
+networks:
+  edge:
+  data:
+    internal: true
+  control:
+    internal: true
+

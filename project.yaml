@@ -1,0 +1,284 @@
+schema_version: 1
+project:
+  id: qctf
+  plan_file: plan.md
+
+components:
+  - id: CMP-WEB
+    title: React contestant and admin UI
+  - id: CMP-CTFD
+    title: Headless CTFd backend and plugins
+  - id: CMP-ORCH
+    title: Instance orchestrator and reconciler
+  - id: CMP-KCTF
+    title: Kubernetes and kCTF runtime
+  - id: CMP-KOTH
+    title: KoTH arena and scoring
+
+decisions:
+  - id: DEC-001
+    title: Use CTFd as the headless domain and score authority
+    status: accepted
+  - id: DEC-002
+    title: Use React as the only product UI
+    status: accepted
+  - id: DEC-003
+    title: Retain kCTF for challenge build and sandbox runtime
+    status: accepted
+  - id: DEC-004
+    title: Implement KoTH as a dedicated CTFd plugin
+    status: accepted
+  - id: DEC-005
+    title: Use Go for the replacement orchestrator
+    status: accepted
+    rationale: Resolved during the user-authorized runnable scaffold increment in plan.md.
+  - id: DEC-006
+    title: Use MariaDB and upstream CTFd 3.8.7 for the new local baseline
+    status: accepted
+  - id: DEC-007
+    title: Build pinned CTFd source locally for customization
+    status: accepted
+    rationale: The user requested a checked-in CTFd source baseline instead of relying on a prebuilt runtime image.
+
+requirements:
+  - id: REQ-001
+    title: Headless CTFd boundary
+    risk: critical
+    source:
+      file: plan.md
+      section: Goal
+    acceptance:
+      - id: AC-001
+        statement: Product routes are served by React while required CTFd APIs remain reachable.
+        verification: [manual_review, behavioral_test]
+      - id: AC-002
+        statement: Authenticated API calls derive TeamId server-side from the CTFd principal.
+        verification: [static_flow, behavioral_test]
+
+  - id: REQ-002
+    title: Durable team-scoped instances
+    risk: critical
+    source:
+      file: plan.md
+      section: Invariants
+    acceptance:
+      - id: AC-003
+        statement: Normal challenge instances use one durable identity per event, challenge, and team.
+        verification: [static_flow, behavioral_test]
+      - id: AC-004
+        statement: Instance state survives worker restart and can be reconciled with Kubernetes resources.
+        verification: [behavioral_test, manual_review]
+
+  - id: REQ-003
+    title: Retained kCTF runtime with managed exposure
+    risk: critical
+    source:
+      file: plan.md
+      section: Architecture decisions
+    acceptance:
+      - id: AC-005
+        statement: Existing kCTF templates and healthchecks remain valid inputs to the new runtime contract.
+        verification: [document_check, behavioral_test]
+      - id: AC-006
+        statement: Production exposure uses managed Service/Ingress or TCP gateway resources instead of unmanaged port-forward processes.
+        verification: [static_flow, behavioral_test]
+
+  - id: REQ-004
+    title: KoTH ownership and scoring
+    risk: critical
+    source:
+      file: plan.md
+      section: Goal
+    acceptance:
+      - id: AC-007
+        statement: Concurrent valid KoTH claims produce one serialized winner and an auditable ownership interval.
+        verification: [static_flow, behavioral_test]
+      - id: AC-008
+        statement: Each arena tick creates at most one CTFd Award for the current owner.
+        verification: [static_flow, behavioral_test]
+
+  - id: REQ-005
+    title: Runtime security boundary
+    risk: critical
+    source:
+      file: plan.md
+      section: Invariants
+    acceptance:
+      - id: AC-009
+        statement: Challenge workloads cannot reach CTFd databases, Redis, or orchestrator credentials.
+        verification: [manual_review, behavioral_test]
+      - id: AC-010
+        statement: Secrets are provided by runtime secret mechanisms and are absent from committed application configuration.
+        verification: [static_flow, manual_review]
+
+  - id: REQ-006
+    title: Runnable local project scaffold
+    risk: standard
+    source:
+      file: plan.md
+      section: Runnable scaffold increment
+    acceptance:
+      - id: AC-011
+        statement: React and Go build and their bounded scaffold tests pass.
+        verification: [behavioral_test]
+      - id: AC-012
+        statement: Local Compose boots and bounded API, plugin and bootstrap smoke checks pass without deploying workloads.
+        verification: [behavioral_test]
+      - id: AC-013
+        statement: Runbook, contracts and execution records distinguish available scaffold behavior from pending product requirements.
+        verification: [document_check, manual_review]
+
+tasks:
+  - id: TASK-001
+    title: Freeze the headless CTFd and React API boundary
+    requirement_ids: [REQ-001]
+    component_ids: [CMP-WEB, CMP-CTFD]
+    decision_ids: [DEC-001, DEC-002]
+    depends_on: []
+    acceptance_ids: [AC-001, AC-002]
+    inputs: [plan.md]
+    outputs: [docs/technical/headless-api.md]
+    out_of_scope: [Admin UI implementation]
+
+  - id: TASK-002
+    title: Define durable challenge-instance contract
+    requirement_ids: [REQ-002]
+    component_ids: [CMP-CTFD, CMP-ORCH]
+    decision_ids: [DEC-001]
+    depends_on: [TASK-001]
+    acceptance_ids: [AC-003, AC-004]
+    inputs: [docs/technical/headless-api.md]
+    outputs: [docs/technical/instance-contract.md]
+    out_of_scope: [Legacy control-plane deletion]
+
+  - id: TASK-003
+    title: Preserve kCTF inputs and define managed exposure
+    requirement_ids: [REQ-003]
+    component_ids: [CMP-KCTF, CMP-ORCH]
+    decision_ids: [DEC-003]
+    depends_on: [TASK-002]
+    acceptance_ids: [AC-005, AC-006]
+    inputs: [infra/kctf, docs/technical/instance-contract.md]
+    outputs: [docs/technical/kctf-contract.md]
+    out_of_scope: [Production cluster rollout]
+
+  - id: TASK-004
+    title: Scaffold KoTH plugin and arena contract
+    requirement_ids: [REQ-004]
+    component_ids: [CMP-KOTH, CMP-CTFD]
+    decision_ids: [DEC-001, DEC-004]
+    depends_on: [TASK-001, TASK-002]
+    acceptance_ids: [AC-007, AC-008]
+    inputs: [docs/technical/instance-contract.md]
+    outputs: [docs/technical/koth-contract.md]
+    out_of_scope: [Advanced attack-defense mode]
+
+  - id: TASK-005
+    title: Define runtime security and release gates
+    requirement_ids: [REQ-005]
+    component_ids: [CMP-ORCH, CMP-KCTF]
+    decision_ids: [DEC-003]
+    depends_on: [TASK-002, TASK-003]
+    acceptance_ids: [AC-009, AC-010]
+    inputs: [docs/technical/kctf-contract.md]
+    outputs: [docs/technical/security-boundary.md]
+    out_of_scope: [Security certification]
+
+  - id: TASK-006
+    title: Initialize the runnable local scaffold
+    requirement_ids: [REQ-006]
+    component_ids: [CMP-WEB, CMP-CTFD, CMP-ORCH, CMP-KOTH, CMP-KCTF]
+    decision_ids: [DEC-001, DEC-002, DEC-003, DEC-004, DEC-005, DEC-006, DEC-007]
+    depends_on: []
+    acceptance_ids: [AC-011, AC-012, AC-013]
+    inputs: [plan.md, docs/technical/headless-api.md, docs/technical/instance-contract.md]
+    outputs: [apps/web, apps/ctfd/upstream, plugins, services/orchestrator, compose.yaml, .github/workflows/ci.yml]
+    out_of_scope: [Durable instance lifecycle, Kubernetes deployment, KoTH ownership and scoring, Legacy migration, Production login]
+    completion_policy: Structural build, bounded smoke checks and manual documentation review; no calibrated domain-logic claim.
+
+verification:
+  thresholds:
+    standard: 0.95
+    critical: 0.99
+  calibration_required_for_auto_advance: true
+  comments: complex_logic_only
+  complexity:
+    cyclomatic_max: 10
+    cognitive_max: 15
+    nesting_max: 3
+
+preservation:
+  baselines:
+    - id: BASE-QCTF-SCAFFOLD
+      source: "."
+      revision: "working-tree source snapshot before 2026-09-21 skill refresh; prior manifest input hash 39ae7c836726b16b836b25220d487f0fbc35a8df0fb4d90cabba9b72a042b017"
+    - id: BASE-FCTF-LEGACY
+      source: "../F-CTF_Platform-master"
+      revision: "working-tree inspected 2026-09-21; no usable git revision was available"
+  artifacts:
+    - id: ART-PLAN
+      path: plan.md
+      role: "maintained product intent, invariants and scope"
+      disposition: preserve
+    - id: ART-MODEL
+      path: project.yaml
+      role: "validated structured planning authority"
+      disposition: enhance
+    - id: ART-STATE
+      path: .project/state.json
+      role: "execution history and current task state"
+      disposition: preserve
+    - id: ART-MANIFEST
+      path: .project/generated-manifest.json
+      role: "generated ownership and source hashes"
+      disposition: enhance
+    - id: ART-BUNDLES
+      path: .project/bundles
+      role: "one task bundle per stable task ID"
+      disposition: enhance
+    - id: ART-TASK-INDEX
+      path: docs/task/README.md
+      role: "generated three-marker task, dependency and evidence index"
+      disposition: enhance
+    - id: ART-TECHNICAL
+      path: docs/technical
+      role: "human-readable contracts and security boundaries"
+      disposition: enhance
+    - id: ART-IMPLEMENTATION
+      path: docs/implementation
+      role: "human-readable implementation records"
+      disposition: enhance
+    - id: ART-SOURCE
+      path: apps
+      role: "runnable application components"
+      disposition: enhance
+    - id: ART-CTFD-UPSTREAM
+      path: apps/ctfd/upstream
+      role: "pinned CTFd 3.8.7 source baseline used for local customization"
+      disposition: enhance
+    - id: ART-PLUGINS
+      path: plugins
+      role: "CTFd extension boundary"
+      disposition: enhance
+    - id: ART-CONTROL
+      path: services/orchestrator
+      role: "replacement control-plane boundary"
+      disposition: enhance
+    - id: ART-RUNTIME-NOTES
+      path: infra/kctf
+      role: "retained kCTF provenance and runtime notes"
+      disposition: preserve
+  conventions:
+    - "plan.md is the authored intent authority; project.yaml is its validated structured index."
+    - "Stable REQ-, AC-, DEC- and TASK- IDs are never renumbered; execution state is separate from relevance."
+    - "English engineering artifacts, thin root agent instructions and evidence stored outside prose are preserved."
+    - "CTFd remains the domain/score authority; React owns product UI; TeamId is server-derived."
+    - "kCTF remains the intended runtime and KoTH is a shared arena with serialized ownership and idempotent ticks."
+    - "Legacy C# control-plane code is a compatibility source to inspect, not an implementation dependency."
+  status_dimensions:
+    - execution
+    - relevance
+  approval_required_for:
+    - remove
+    - semantic_change
+    - authority_change

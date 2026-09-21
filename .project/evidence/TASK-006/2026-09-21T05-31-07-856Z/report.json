@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "task_id": "TASK-006",
+  "run_id": "2026-09-21T05-31-07-856Z",
+  "spec_hash": "4a60d301744fc2f6ffcb154f24554ed37358c6c35aca67685bfbac589cf2b58d",
+  "source_hash": "12541268d4e402af2555af8d7f4d126e3320fa793d1be982028b1c711ebf7258",
+  "source_unchanged_during_run": true,
+  "scope": "Local scaffold build and bounded smoke checks only; not a production logic gate",
+  "status": "pass",
+  "calibrated_logic_confidence": null,
+  "calibration": {
+    "status": "unavailable",
+    "reason": "No applicable calibrated logic evaluator; scaffold uses build/smoke/manual criteria"
+  },
+  "checks": [
+    {
+      "id": "node-version",
+      "command": [
+        "node",
+        "--version"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 17,
+      "artifact": "node-version.log",
+      "sha256": "cbed609d6cd010549ef4f6c6804420506719da2c844a68616ad02a4a5ef75b8a"
+    },
+    {
+      "id": "go-version",
+      "command": [
+        "go",
+        "version"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 53,
+      "artifact": "go-version.log",
+      "sha256": "c528ba02b39880f1357f51dee70e41c1ef03e3a70c7a03055c080532b9635f58"
+    },
+    {
+      "id": "go-tests",
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-count=1",
+        "-v",
+        "./..."
+      ],
+      "directory": "services/orchestrator",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 2410,
+      "artifact": "go-tests.log",
+      "sha256": "1b3bba95ae64e17a92ba2fe19c7e42f8b19dae91f046fbd5ca393169c9ea1872"
+    },
+    {
+      "id": "go-vet",
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "directory": "services/orchestrator",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 127,
+      "artifact": "go-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "npm-ci",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "directory": "apps/web",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 739,
+      "artifact": "npm-ci.log",
+      "sha256": "93f174adf414131f52edd5103d12fd70b4df0643fdca739fa39b63080deb1351"
+    },
+    {
+      "id": "web-check",
+      "command": [
+        "npm",
+        "run",
+        "check"
+      ],
+      "directory": "apps/web",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 2170,
+      "artifact": "web-check.log",
+      "sha256": "d28bff89fd6acc2168e5db012844b17f4a39ab394ed03b4c767139f7c7be324f"
+    },
+    {
+      "id": "compose-config",
+      "command": [
+        "docker",
+        "compose",
+        "config",
+        "--quiet"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 177,
+      "artifact": "compose-config.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "compose-start",
+      "command": [
+        "docker",
+        "compose",
+        "up",
+        "--build",
+        "-d",
+        "--wait"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 27245,
+      "artifact": "compose-start.log",
+      "sha256": "ea0d7f101d20efa989377e5a441e7825e71ec134d751d3d601030c5e3022c6ad"
+    },
+    {
+      "id": "plugin-tests",
+      "command": [
+        "make",
+        "test-plugins"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 740,
+      "artifact": "plugin-tests.log",
+      "sha256": "7b187975f6721e91d13a008a70e00d651964b441af10b0aa815401b4d549b09e"
+    },
+    {
+      "id": "fresh-bootstrap",
+      "command": [
+        "make",
+        "test-bootstrap"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 2944,
+      "artifact": "fresh-bootstrap.log",
+      "sha256": "e2da252b30b2eb2e229f4f527d121fa859f9e2fae97ef2f509dd0d1973fccebb"
+    },
+    {
+      "id": "api-smoke",
+      "command": [
+        "make",
+        "smoke"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 153,
+      "artifact": "api-smoke.log",
+      "sha256": "d9d2bdafe589d4736e79b5aa936e48f941ed3c116334826fd41a92d6480b4c4c"
+    },
+    {
+      "id": "compose-status",
+      "command": [
+        "docker",
+        "compose",
+        "ps"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 52,
+      "artifact": "compose-status.log",
+      "sha256": "a01e87429cd3b41793640eff55e94990704143832b0a00819a5aa0f0a07c29d5"
+    },
+    {
+      "id": "image-ids",
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "qctf-ctfd",
+        "qctf-orchestrator",
+        "qctf-gateway",
+        "--format",
+        "{{.Id}}"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 37,
+      "artifact": "image-ids.log",
+      "sha256": "c87b372b8edece33dbbd926bf789751468a4066ebfbffe1dcd183892dea207e6"
+    }
+  ],
+  "manual_review_required": [
+    "AC-013: current docs, routes, topology and explicit pending work"
+  ],
+  "limitations": [
+    "No Kubernetes workloads or isolation tests",
+    "No ownership/tick concurrency implementation",
+    "No full end-user authentication or legacy parity",
+    "Runtime secrets and mutable database contents excluded from source snapshot",
+    "Image IDs recorded; no supply-chain or vulnerability certification",
+    "No complete AST/data-flow or calibrated requirement-alignment analysis"
+  ]
+}

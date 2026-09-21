@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "TASK-006",
+  "review_kind": "manual_scaffold_completion_after_skill_refresh",
+  "source_hash": "12541268d4e402af2555af8d7f4d126e3320fa793d1be982028b1c711ebf7258",
+  "spec_hash": "4a60d301744fc2f6ffcb154f24554ed37358c6c35aca67685bfbac589cf2b58d",
+  "runner_report": "2026-09-21T05-31-07-856Z/report.json",
+  "criteria": [
+    {"id": "AC-011", "status": "pass", "basis": "Inspected actual web-check, go-tests and go-vet logs; build and bounded tests passed"},
+    {"id": "AC-012", "status": "pass", "basis": "Inspected healthy Compose startup, plugin tests, fresh/repeated bootstrap and 13 live gateway/API checks"},
+    {"id": "AC-013", "status": "pass", "basis": "Reviewed preservation map, README/run commands, technical contracts, UI status, task bundles and explicit pending work"}
+  ],
+  "calibrated_logic_confidence": null,
+  "automatic_logic_gate": "inconclusive",
+  "notes": [
+    "Task completion applies only to REQ-006 structural/build/smoke/manual scaffold criteria",
+    "REQ-001 through REQ-005 are not marked passing or complete",
+    "The GitHub skill was refreshed at commit 8a4b180a731d9ba596c42b33ebd948f5b5af88ae; the previous evidence remains historical",
+    "No full AST-derived flow analysis, mutation campaign, cluster isolation test or calibrated evaluator was available"
+  ]
+}

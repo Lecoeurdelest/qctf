@@ -1,0 +1,65 @@
+.env
+.env.*
+!.env.example
+.envrc
+
+# Python caches, virtual environments and packaging output
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+*.egg-info/
+*.egg
+build/
+eggs/
+htmlcov/
+coverage/
+.coverage
+.coverage.*
+.cache/
+
+# Local databases, logs and runtime state
+*.db
+*.sqlite
+*.sqlite3
+*.log
+*.log.*
+*.pid
+*.sock
+tmp/
+temp/
+
+# CTFd runtime data must not be committed; the vendored source remains tracked
+apps/ctfd/upstream/CTFd/uploads/
+apps/ctfd/upstream/CTFd/static/uploads/
+apps/ctfd/upstream/.ctfd_secret_key
+apps/ctfd/upstream/.data/
+
+# JavaScript tooling output
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# OS and editor files
+.DS_Store
+.AppleDouble
+.Spotlight-V100
+Thumbs.db
+.idea/
+.vscode/*.local.json
+*.swp
+*.swo
+
+# Go test/build artifacts
+*.test
+
+# Local evidence logs are regenerated; report.json files stay reviewable
+.project/evidence/local-*/

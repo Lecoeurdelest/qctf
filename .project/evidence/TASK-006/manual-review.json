@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "TASK-006",
+  "review_kind": "manual_scaffold_completion",
+  "source_hash": "39ae7c836726b16b836b25220d487f0fbc35a8df0fb4d90cabba9b72a042b017",
+  "spec_hash": "46139b0bf25249946b7d1d42d73cf50abe2b3a0c2d16ad15ddb67348061af8ed",
+  "runner_report": "2026-09-20T12-32-43-206Z/report.json",
+  "criteria": [
+    {"id": "AC-011", "status": "pass", "basis": "Inspected actual web-check, go-tests and go-vet logs; build and bounded tests passed"},
+    {"id": "AC-012", "status": "pass", "basis": "Inspected healthy Compose startup, 11 plugin tests, fresh/repeated bootstrap and 13 live gateway/API checks"},
+    {"id": "AC-013", "status": "pass", "basis": "Reviewed README/run commands, five technical contracts, source boundaries, disabled feature UI and pending task records; current docs explicitly distinguish scaffold from unimplemented product behavior"}
+  ],
+  "calibrated_logic_confidence": null,
+  "automatic_logic_gate": "inconclusive",
+  "notes": [
+    "Task completion applies only to REQ-006 structural/build/smoke/manual scaffold criteria",
+    "REQ-001 through REQ-005 are not marked passing or complete",
+    "Inspected rendered overview and scoreboard in local browser; scoreboard displayed empty real data and console had no warnings/errors in that observed flow",
+    "Local browser token-entry negative test displayed Unauthorized and remained signed out",
+    "Original bootstrap and API failures were repaired and retained as evidence",
+    "No full AST-derived flow analysis, mutation campaign, cluster isolation test or calibrated evaluator was available"
+  ]
+}

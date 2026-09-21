@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "TASK-006",
+  "review_kind": "manual_scaffold_completion_after_skill_sync",
+  "source_hash": "2cf537b51438bee2cc412c9a9a893bc474d3b341a491ec5c77403e08f5f06500",
+  "spec_hash": "a0ff1deb65e0ccc31a78ab5cf3f034561b928348336d3734663d151afaca5527",
+  "runner_report": "2026-09-21T09-34-17-969Z/report.json",
+  "criteria": [
+    {"id": "AC-011", "status": "pass", "basis": "Frontend and Go build/test checks passed"},
+    {"id": "AC-012", "status": "pass", "basis": "Compose startup, plugin tests, fresh bootstrap and live smoke checks passed"},
+    {"id": "AC-013", "status": "pass", "basis": "Plan validation, preservation audit and three-marker task-index audit passed; manual docs retain pending product gates"}
+  ],
+  "calibrated_logic_confidence": null,
+  "automatic_logic_gate": "inconclusive",
+  "notes": [
+    "This is a scaffold synchronization result, not a production-readiness result",
+    "REQ-001 through REQ-005 remain incomplete; TASK-001 is still in_progress",
+    "Current skill source was refreshed from remote commit 41c1bd8ec495524656369a95c126bc09bf465896",
+    "No Kubernetes workload, KoTH concurrency implementation, legacy migration or calibrated logic evaluator was exercised"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "lifecycle": "in_progress",
+  "active_workflow": "initialize",
+  "tasks": {
+    "TASK-001": "in_progress",
+    "TASK-002": "todo",
+    "TASK-003": "todo",
+    "TASK-004": "todo",
+    "TASK-005": "todo",
+    "TASK-006": "done"
+  },
+  "blockers": [],
+  "history": [
+    {
+      "event": "initialized",
+      "source": "plan.md",
+      "note": "New qctf sibling project scaffolded from the headless CTFd/kCTF/KoTH plan."
+    },
+    {
+      "event": "runnable_scaffold_completed",
+      "task_id": "TASK-006",
+      "source": "plan.md#runnable-scaffold-increment",
+      "completion_basis": "Structural builds, bounded live smoke checks and separate manual review; not calibrated domain-logic verification",
+      "evidence": ".project/evidence/TASK-006/2026-09-21T09-38-34-253Z/report.json",
+      "manual_review": ".project/evidence/TASK-006/manual-review-20260921-final.json",
+      "note": "React, headless CTFd plugins, Go and local Compose run. Critical product tasks remain pending; no workload deployment or legacy migration."
+    },
+    {
+      "event": "skill_refreshed_and_project_reinitialized",
+      "source": "https://github.com/Lecoeurdelest/plan-driven-development@8a4b180a731d9ba596c42b33ebd948f5b5af88ae",
+      "backup": "/Users/quyn28654/.codex/skills/plan-driven-development.backup-20260921",
+      "note": "Reconciled preserved qctf plan, model, bundles, implementation record and evidence under the refreshed skill; prior TASK-006 evidence requires revalidation."
+    },
+    {
+      "event": "skill_refreshed_and_project_synchronized",
+      "source": "https://github.com/Lecoeurdelest/plan-driven-development@41c1bd8ec495524656369a95c126bc09bf465896",
+      "backup": "/Users/quyn28654/.codex/skills/plan-driven-development.backup-20260921-refresh",
+      "evidence": ".project/evidence/TASK-006/2026-09-21T09-34-17-969Z/report.json",
+      "note": "Added the required three-marker task/dependency index, included plan/preservation/status audits in verify, and confirmed the runnable stack remains healthy."
+    },
+    {
+      "event": "task_index_evidence_path_stabilized",
+      "task_id": "TASK-006",
+      "note": "Visible task index now links the stable evidence directory; exact report paths remain in execution state and implementation records."
+    },
+    {
+      "event": "final_sync_verified",
+      "task_id": "TASK-006",
+      "evidence": ".project/evidence/TASK-006/2026-09-21T09-38-34-253Z/report.json",
+      "note": "Final synchronized snapshot passed all 16 plan, preservation, task-index, build and live integration checks."
+    },
+    {
+      "event": "ctfd_source_vendored_and_verified",
+      "task_id": "TASK-006",
+      "source": "apps/ctfd/upstream",
+      "evidence": ".project/evidence/TASK-006/2026-09-21T12-23-46-928Z/report.json",
+      "note": "CTFd 3.8.7 source is checked into the project, built locally with qctf plugins, and passed the full scaffold verification run."
+    }
+  ],
+  "next_task": "TASK-001",
+  "calibrated_logic_confidence": null,
+  "production_readiness": "not_ready",
+  "relevance": "current",
+  "revalidation_required": ["TASK-001"]
+}

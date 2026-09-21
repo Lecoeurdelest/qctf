@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "task_id": "TASK-006",
+  "run_id": "2026-09-21T09-37-25-102Z",
+  "spec_hash": "a0ff1deb65e0ccc31a78ab5cf3f034561b928348336d3734663d151afaca5527",
+  "source_hash": "56ba83ed14c0ef0e10e0a8a8e471d6d396d755cdebe179881f02a5ce70917d30",
+  "source_unchanged_during_run": true,
+  "scope": "Local scaffold build and bounded smoke checks only; not a production logic gate",
+  "status": "pass",
+  "calibrated_logic_confidence": null,
+  "calibration": {
+    "status": "unavailable",
+    "reason": "No applicable calibrated logic evaluator; scaffold uses build/smoke/manual criteria"
+  },
+  "checks": [
+    {
+      "id": "node-version",
+      "command": [
+        "node",
+        "--version"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 17,
+      "artifact": "node-version.log",
+      "sha256": "cbed609d6cd010549ef4f6c6804420506719da2c844a68616ad02a4a5ef75b8a"
+    },
+    {
+      "id": "go-version",
+      "command": [
+        "go",
+        "version"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 36,
+      "artifact": "go-version.log",
+      "sha256": "c528ba02b39880f1357f51dee70e41c1ef03e3a70c7a03055c080532b9635f58"
+    },
+    {
+      "id": "plan-validation",
+      "command": [
+        "python3",
+        "/Users/quyn28654/.codex/skills/plan-driven-development/scripts/check_project.py",
+        "validate",
+        "project.yaml"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 49,
+      "artifact": "plan-validation.log",
+      "sha256": "9ad94108120c77095562ff10646223856faf58cc32d5d383d11365a90ad3fca8"
+    },
+    {
+      "id": "preservation-audit",
+      "command": [
+        "python3",
+        "/Users/quyn28654/.codex/skills/plan-driven-development/scripts/check_project.py",
+        "audit-preservation",
+        "project.yaml",
+        "--root",
+        "."
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 48,
+      "artifact": "preservation-audit.log",
+      "sha256": "69b18f3f0563548c26a065c836e8f8efb262482033a3e46ea2c02d57709bbb88"
+    },
+    {
+      "id": "task-index-audit",
+      "command": [
+        "python3",
+        "/Users/quyn28654/.codex/skills/plan-driven-development/scripts/check_project.py",
+        "audit-task-status",
+        "docs/task/README.md"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 35,
+      "artifact": "task-index-audit.log",
+      "sha256": "6d0b32d76c74ff99f02dd366488b63446220a30cb07a4fa527724f9b62625cca"
+    },
+    {
+      "id": "go-tests",
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-count=1",
+        "-v",
+        "./..."
+      ],
+      "directory": "services/orchestrator",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 2071,
+      "artifact": "go-tests.log",
+      "sha256": "e08d723711744a54b1367239c30acfe504a3bf910601f10b2a047ccfcecd1606"
+    },
+    {
+      "id": "go-vet",
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "directory": "services/orchestrator",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 130,
+      "artifact": "go-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "npm-ci",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "directory": "apps/web",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 717,
+      "artifact": "npm-ci.log",
+      "sha256": "f092e71e17b409784806bb84df76afa2b71afe48006ddb57d4b84cc48700c64a"
+    },
+    {
+      "id": "web-check",
+      "command": [
+        "npm",
+        "run",
+        "check"
+      ],
+      "directory": "apps/web",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 2014,
+      "artifact": "web-check.log",
+      "sha256": "f9a6491d0f40797473c963293d6e2c6dfb9501f89cd8317cc187ea0b24bfc622"
+    },
+    {
+      "id": "compose-config",
+      "command": [
+        "docker",
+        "compose",
+        "config",
+        "--quiet"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 102,
+      "artifact": "compose-config.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "compose-start",
+      "command": [
+        "docker",
+        "compose",
+        "up",
+        "--build",
+        "-d",
+        "--wait"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 24641,
+      "artifact": "compose-start.log",
+      "sha256": "f8504ae7e7df13edba52ae1ff1ddd62c51c8474e3d1354a6edabd05b5513aaa4"
+    },
+    {
+      "id": "plugin-tests",
+      "command": [
+        "make",
+        "test-plugins"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 719,
+      "artifact": "plugin-tests.log",
+      "sha256": "a594596dc4b8eacb99919e6f5d0ede9c12efd551999fea0bc7965676e5d252d6"
+    },
+    {
+      "id": "fresh-bootstrap",
+      "command": [
+        "make",
+        "test-bootstrap"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 2877,
+      "artifact": "fresh-bootstrap.log",
+      "sha256": "67f517c26f1962ff3b0f51eaf2622abc2b1ac2b57eb61eadda2bb600f96dae51"
+    },
+    {
+      "id": "api-smoke",
+      "command": [
+        "make",
+        "smoke"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 140,
+      "artifact": "api-smoke.log",
+      "sha256": "d9d2bdafe589d4736e79b5aa936e48f941ed3c116334826fd41a92d6480b4c4c"
+    },
+    {
+      "id": "compose-status",
+      "command": [
+        "docker",
+        "compose",
+        "ps"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 56,
+      "artifact": "compose-status.log",
+      "sha256": "b9bcbfaecf6cb25579b45de1e55d3c2b812427ee2af5d6d48ec22a413f90566a"
+    },
+    {
+      "id": "image-ids",
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "qctf-ctfd",
+        "qctf-orchestrator",
+        "qctf-gateway",
+        "--format",
+        "{{.Id}}"
+      ],
+      "directory": ".",
+      "exit_code": 0,
+      "signal": null,
+      "status": "pass",
+      "duration_ms": 39,
+      "artifact": "image-ids.log",
+      "sha256": "9f7883a16338780390b28073ebf8c20f67fec352aa984d64bd5d009fd61b45bc"
+    }
+  ],
+  "manual_review_required": [
+    "AC-013: current docs, routes, topology and explicit pending work"
+  ],
+  "limitations": [
+    "No Kubernetes workloads or isolation tests",
+    "No ownership/tick concurrency implementation",
+    "No full end-user authentication or legacy parity",
+    "Runtime secrets and mutable database contents excluded from source snapshot",
+    "Image IDs recorded; no supply-chain or vulnerability certification",
+    "No complete AST/data-flow or calibrated requirement-alignment analysis"
+  ]
+}
