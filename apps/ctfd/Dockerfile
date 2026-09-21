@@ -2,6 +2,8 @@
 # Flask application and its plugins without depending on a prebuilt image.
 FROM python:3.11-slim-bookworm AS build
 
+COPY --from=ghcr.io/astral-sh/uv:0.11.32 /uv /usr/local/bin/uv
+
 WORKDIR /opt/CTFd
 
 RUN apt-get update \
@@ -16,8 +18,9 @@ RUN apt-get update \
 
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY apps/ctfd/upstream/requirements.txt /opt/CTFd/requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+COPY apps/ctfd/upstream/pyproject.toml apps/ctfd/upstream/uv.lock /opt/CTFd/
+RUN uv sync --locked --no-dev --no-cache --no-managed-python
 
 COPY apps/ctfd/upstream/ /opt/CTFd/
 COPY plugins/ctfd-headless/qctf_headless /opt/CTFd/CTFd/plugins/qctf_headless

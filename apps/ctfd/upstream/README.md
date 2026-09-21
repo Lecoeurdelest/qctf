@@ -41,10 +41,10 @@ CTFd is a Capture The Flag framework focusing on ease of use and customizability
 
 ## Install
 
-1. Install dependencies: `pip install -r requirements.txt`
-   1. You can also use the `prepare.sh` script to install system dependencies using apt.
+1. Install dependencies: `uv sync --locked --no-dev` (requires uv and Python 3.11)
+   1. You can also use `./prepare.sh` to sync runtime dependencies with uv.
 2. Modify [CTFd/config.ini](https://github.com/CTFd/CTFd/blob/master/CTFd/config.ini) to your liking.
-3. Use `python serve.py` or `flask run` in a terminal to drop into debug mode.
+3. Use `uv run --locked --no-dev python serve.py` or `uv run --locked --no-dev flask run` in a terminal to drop into debug mode.
 
 You can use the auto-generated Docker images with the following command:
 

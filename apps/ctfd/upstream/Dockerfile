@@ -1,5 +1,7 @@
 FROM python:3.11-slim-bookworm AS build
 
+COPY --from=ghcr.io/astral-sh/uv:0.11.32 /uv /usr/local/bin/uv
+
 WORKDIR /opt/CTFd
 
 # hadolint ignore=DL3008
@@ -17,12 +19,8 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY . /opt/CTFd
 
-RUN pip install --no-cache-dir -r requirements.txt \
-    && for d in CTFd/plugins/*; do \
-        if [ -f "$d/requirements.txt" ]; then \
-            pip install --no-cache-dir -r "$d/requirements.txt";\
-        fi; \
-    done;
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+RUN uv sync --locked --no-dev --no-cache --no-managed-python
 
 
 FROM python:3.11-slim-bookworm AS release

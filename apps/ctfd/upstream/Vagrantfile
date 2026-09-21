@@ -22,7 +22,7 @@ mkvirtualenv ctfd
 workon ctfd
 cd /vagrant
 ./prepare.sh
-pip install -r development.txt
+uv sync --locked
 
 echo "Initialising database"
 commands="CREATE DATABASE ctfd;
@@ -40,10 +40,10 @@ workon ctfd
 export DATABASE_URL="mysql+pymysql://ctfduser:ctfd@localhost/ctfd"
 
 cd /vagrant
-python manage.py db upgrade
+uv run --locked python manage.py db upgrade
 
 echo "Starting CTFd"
-tmux new-session -d -n "ctfd" -c "/vagrant" -s "ctfd" "gunicorn --bind 0.0.0.0:8000 -w 4 'CTFd:create_app()'"
+tmux new-session -d -n "ctfd" -c "/vagrant" -s "ctfd" "uv run --locked gunicorn --bind 0.0.0.0:8000 -w 4 'CTFd:create_app()'"
 SCRIPT
 
 Vagrant.configure("2") do |config|
