@@ -1,80 +1,43 @@
 # qctf
 
-Runnable development scaffold for a React-only CTF platform backed by CTFd,
-with a Go control plane and planned kCTF/KoTH integration. No C# code is used.
-The sibling legacy project is unchanged by this increment.
+Headless CTF platform with a React UI, CTFd backend, and Go orchestrator.
+kCTF runtime and KoTH gameplay are planned; the project is currently a development scaffold.
 
-## Start locally
+## Run locally
 
-Requires Docker with Compose v2 and Node.js 24+. First startup downloads images.
+Requires Docker with Compose v2 and Node.js 24+.
 
 ```sh
-cd /Users/quyn28654/Documents/personal/qctf
 make dev
 ```
 
-Open http://localhost:8088. `make env` creates an ignored, mode-0600 `.env`
-with random local credentials; existing files are never overwritten. Use
-`QCTF_ADMIN_TOKEN` from that file in **Connect account**. The token is kept in
-browser memory only and is lost on reload. Do not distribute this admin token.
-Self-service login, registration, team management and password reset are pending.
+Open http://localhost:8088. Startup creates `.env` with local credentials.
+Use its `QCTF_ADMIN_TOKEN` in **Connect account**; the token clears on reload.
+Keep it private. Change `QCTF_PORT` in `.env` to use another port.
+This stack is for local development only.
 
-Only the gateway is published, on loopback. CTFd, MariaDB, Redis and the Go
-service have no published host ports. `make down` stops this project's stack
-without deleting database or upload volumes. `make logs` follows service logs.
-Change `QCTF_PORT` in `.env` if 8088 is occupied. Never use this Compose file as
-a public production deployment.
+## Status
 
-## Available now
+- React challenge and scoreboard pages use the CTFd API.
+- CTFd source lives in `apps/ctfd/upstream`; React replaces its original UI.
+- Go orchestrator provides authenticated diagnostics; instance creation is not implemented.
+- kCTF integration, KoTH gameplay, and account/team management flows are pending.
 
-- React routes: overview, challenges, scoreboard, KoTH status, control center,
-  and development token access. Challenge/score lists use the real CTFd API.
-- CTFd 3.8.7 + Flask source is checked into `apps/ctfd/upstream/` and built
-  locally, so core behavior can be customized. Original UI controllers, themes, forms and plugin assets
-  are removed; React handles product routes.
-- Server-derived user/team identity and admin-only runtime inspection.
-- Internal Go HTTP service with liveness, explicit non-readiness, and service
-  authentication. No Kubernetes client, workload, or cluster credentials yet.
-- KoTH plugin namespace and disabled capability endpoints. Arena/claim writes
-  return 501; no ownership, claims, ticks or Awards are fabricated.
-- Persistent MariaDB, Redis cache, generated local secrets, tests and CI jobs.
-
-## Architecture
-
-```text
-Browser → gateway → React static assets
-                 → /api/v1/*       → CTFd core → MariaDB / Redis
-                 → /api/qctf/v1/*  → qctf plugins
-                                      └→ internal Go orchestrator
-                                          └→ kCTF / Kubernetes [pending]
-KoTH: shared arena + ownership/award ledger [pending], not one arena per team.
-```
-
-## Development and verification
+## Development
 
 ```sh
-make check          # Go race tests/vet + frontend tests/build; Go 1.26+ required
-make test-plugins   # Run plugin tests inside the running CTFd container
-make test-bootstrap # Bootstrap twice in a fresh temporary SQLite container
-make smoke          # Check the live gateway/API stack without seeding data
-make sync           # Regenerate task index/manifest and validate plan preservation
-make verify         # Record real logs and a source snapshot under .project/evidence
+make down           # Stop containers, keep data
+make logs           # Follow logs
+make check          # Go tests/vet + frontend checks (Go 1.26+)
+make test-plugins   # Plugin tests; requires running CTFd
+make test-bootstrap # Check bootstrap idempotency
+make smoke          # Check the running stack
+make sync           # Refresh planning indexes
+make verify         # Record verification evidence
 ```
 
-For frontend hot reload, start the Compose stack, then run `npm ci` and
-`npm run dev` in `apps/web`. Vite proxies API requests to port 8088; update
-`vite.config.ts` if you change that port. Runtime code changes require
-`make dev` to rebuild images. CI uses the same checks; its remote run is not
-claimed until the repository is published and a workflow actually executes.
+For frontend hot reload, run `npm ci && npm run dev` in `apps/web` with the
+stack running. Vite proxies APIs to port 8088. Run `make dev` to rebuild containers.
 
-## Next implementation slices
-
-1. Complete React account/team/admin flows and CTFd challenge solving UI.
-2. Add durable instance records, uniqueness, outbox/reconciliation and TeamId checks.
-3. Integrate kCTF Challenge CRs, image digests, healthchecks and managed exposure.
-4. Add KoTH trusted proof verification, transactional ownership and idempotent Awards.
-5. Verify cluster isolation, quotas, audit/metrics, migration parity and production auth.
-
-See `plan.md`, `project.yaml`, `.project/state.json`, `docs/technical/`, and
-`docs/task/README.md`, `docs/implementation/`. Passing scaffold checks do not close the
-critical product requirements REQ-001 through REQ-005.
+See [project.yaml](project.yaml) for the plan, [tasks](docs/task/README.md)
+for progress, and [technical docs](docs/technical/) for architecture.
