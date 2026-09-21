@@ -51,7 +51,6 @@ def update_check(force=False):
                 "user_mode": get_config("user_mode"),
                 "user_count": Users.query.count(),
                 "team_count": Teams.query.count(),
-                "theme": get_config("ctf_theme"),
                 "upload_provider": get_app_config("UPLOAD_PROVIDER"),
                 "channel": app.CHANNEL,
             }

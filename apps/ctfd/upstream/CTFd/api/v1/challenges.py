@@ -2,7 +2,7 @@ import math
 from datetime import datetime, timedelta
 from typing import List  # noqa: I001
 
-from flask import abort, render_template, request, session, url_for
+from flask import abort, request, session, url_for
 from flask_restx import Namespace, Resource
 from sqlalchemy.sql import and_
 
@@ -214,8 +214,6 @@ class ChallengeList(Resource):
                                     "solved_by_me": False,
                                     "category": challenge.category,
                                     "tags": challenge.tags,
-                                    "template": "",
-                                    "script": "",
                                 }
                             )
                         else:
@@ -229,8 +227,6 @@ class ChallengeList(Resource):
                                     "solved_by_me": False,
                                     "category": "???",
                                     "tags": [],
-                                    "template": "",
-                                    "script": "",
                                 }
                             )
                     # Fallthrough to continue
@@ -254,8 +250,6 @@ class ChallengeList(Resource):
                     "solved_by_me": challenge.id in user_solves,
                     "category": challenge.category,
                     "tags": challenge.tags,
-                    "template": challenge_type.templates["view"],
-                    "script": challenge_type.scripts["view"],
                 }
             )
 
@@ -308,11 +302,6 @@ class ChallengeTypes(Resource):
             response[challenge_class.id] = {
                 "id": challenge_class.id,
                 "name": challenge_class.name,
-                "templates": challenge_class.templates,
-                "scripts": challenge_class.scripts,
-                "create": render_template(
-                    challenge_class.templates["create"].lstrip("/")
-                ),
             }
         return {"success": True, "data": response}
 
@@ -393,8 +382,6 @@ class Challenge(Resource):
                                     "solution_id": None,
                                     "category": chal.category,
                                     "tags": tags,
-                                    "template": "",
-                                    "script": "",
                                 },
                             }
                         else:
@@ -411,8 +398,6 @@ class Challenge(Resource):
                                     "solution_id": None,
                                     "category": "???",
                                     "tags": [],
-                                    "template": "",
-                                    "script": "",
                                 },
                             }
                     abort(403)
@@ -557,20 +542,6 @@ class Challenge(Resource):
                     solution_id = chal.solution.id
         response["solution_id"] = solution_id
         response["solution_state"] = solution_state
-
-        response["view"] = render_template(
-            chal_class.templates["view"].lstrip("/"),
-            solves=solve_count,
-            solved_by_me=solved_by_user,
-            files=files,
-            tags=tags,
-            hints=[Hints(**h) for h in hints],
-            rating=rating,
-            ratings=rating_info,
-            max_attempts=chal.max_attempts,
-            attempts=attempts,
-            challenge=chal,
-        )
 
         if (
             authed() is True

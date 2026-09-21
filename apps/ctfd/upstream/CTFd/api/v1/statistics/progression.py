@@ -139,9 +139,9 @@ class ProgressionMatrix(Resource):
         scoreboard_data = []
         for idx, user in enumerate(account_scores, start=1):
             if user_mode == "teams":
-                account_url = url_for("admin.teams_detail", team_id=user.account_id)
+                account_url = url_for("api.teams_team_public", team_id=user.account_id)
             else:
-                account_url = url_for("admin.users_detail", user_id=user.account_id)
+                account_url = url_for("api.users_user_public", user_id=user.account_id)
 
             entry = {
                 "id": user.account_id,
@@ -176,7 +176,7 @@ class ProgressionMatrix(Resource):
                     "position": challenge.position,
                     "category": challenge.category,
                     "url": url_for(
-                        "admin.challenges_detail", challenge_id=challenge.id
+                        "api.challenges_challenge", challenge_id=challenge.id
                     ),
                 }
             )

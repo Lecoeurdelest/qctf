@@ -22,7 +22,7 @@ test-plugins:
 	docker compose exec -T ctfd python -m unittest discover -s /opt/qctf/tests -v
 
 test-bootstrap:
-	docker compose run --rm --no-deps --entrypoint python -e DATABASE_URL=sqlite:////tmp/qctf-bootstrap.sqlite -e REDIS_URL= ctfd /opt/qctf/tests/bootstrap_probe.py
+	docker compose run --rm --no-deps --entrypoint python -e DATABASE_URL=sqlite:////tmp/qctf-bootstrap.sqlite -e REDIS_URL= -e UPLOAD_FOLDER=/tmp/qctf-probe-uploads ctfd /opt/qctf/tests/bootstrap_probe.py
 
 smoke:
 	node scripts/smoke.mjs

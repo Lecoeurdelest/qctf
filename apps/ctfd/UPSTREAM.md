@@ -23,3 +23,24 @@ custom behavior in qctf plugins or a focused source diff.
 The source tree is an application dependency, not a second planning authority.
 `plan.md` and `project.yaml` continue to own qctf intent and acceptance.
 
+
+## Headless source delta (2026-09-21)
+
+Removed the legacy page blueprints, WTForms, themes and discovery/loaders,
+plugin asset/template/menu hooks, social-share rendering and its API, font,
+Swagger UI registration, UI enum generation and obsolete theme build jobs.
+WTForms and Pillow are removed from the dependency lock. Jinja2 remains a
+Flask dependency; Babel/locales remain for backend validation messages.
+
+The retained `views.py` contains protected downloads only. Challenge and flag
+APIs return structured data without template/script/rendered-view fields.
+Account/statistics links point to API resources. Request processors and
+permission decorators return API errors instead of redirecting to removed
+pages; token identity is resolved before account-status checks for all request
+content types. Schema and migration history remain intact; one migration
+imports email constants from their defining module instead of a UI helper.
+
+UI-only upstream tests are removed. Shared upstream fixtures use models and
+sessions instead of removed setup/login forms. The retained upstream suite
+is a reference for backend parity, not a claim of full upstream compatibility.
+The supported qctf checks are `make test-plugins test-bootstrap smoke`.

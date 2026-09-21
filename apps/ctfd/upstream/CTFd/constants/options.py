@@ -1,4 +1,4 @@
-from CTFd.constants import JinjaEnum, RawEnum
+from CTFd.constants import RawEnum
 
 
 class ConfigTypes(str, RawEnum):
@@ -8,20 +8,17 @@ class ConfigTypes(str, RawEnum):
     REGISTRATION_VISIBILITY = "registration_visibility"
 
 
-@JinjaEnum
 class UserModeTypes(str, RawEnum):
     USERS = "users"
     TEAMS = "teams"
 
 
-@JinjaEnum
 class ChallengeVisibilityTypes(str, RawEnum):
     PUBLIC = "public"
     PRIVATE = "private"
     ADMINS = "admins"
 
 
-@JinjaEnum
 class ScoreVisibilityTypes(str, RawEnum):
     PUBLIC = "public"
     PRIVATE = "private"
@@ -29,14 +26,12 @@ class ScoreVisibilityTypes(str, RawEnum):
     ADMINS = "admins"
 
 
-@JinjaEnum
 class AccountVisibilityTypes(str, RawEnum):
     PUBLIC = "public"
     PRIVATE = "private"
     ADMINS = "admins"
 
 
-@JinjaEnum
 class RegistrationVisibilityTypes(str, RawEnum):
     PUBLIC = "public"
     PRIVATE = "private"

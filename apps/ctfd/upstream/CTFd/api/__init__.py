@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app
+from flask import Blueprint
 from flask_restx import Api
 
 from CTFd.api.v1.awards import awards_namespace
@@ -18,7 +18,6 @@ from CTFd.api.v1.schemas import (
     APISimpleSuccessResponse,
 )
 from CTFd.api.v1.scoreboard import scoreboard_namespace
-from CTFd.api.v1.shares import shares_namespace
 from CTFd.api.v1.solutions import solutions_namespace
 from CTFd.api.v1.statistics import statistics_namespace
 from CTFd.api.v1.submissions import submissions_namespace
@@ -29,17 +28,24 @@ from CTFd.api.v1.topics import topics_namespace
 from CTFd.api.v1.unlocks import unlocks_namespace
 from CTFd.api.v1.users import users_namespace
 
+
+class HeadlessApi(Api):
+    def _register_apidoc(self, app):
+        # Flask-RESTX registers Swagger UI assets even when doc=False.
+        pass
+
+
 api = Blueprint("api", __name__, url_prefix="/api/v1")
-CTFd_API_v1 = Api(
+CTFd_API_v1 = HeadlessApi(
     api,
     version="v1",
-    doc=current_app.config.get("SWAGGER_UI_ENDPOINT"),
+    doc=False,
     authorizations={
         "AccessToken": {
             "type": "apiKey",
             "in": "header",
             "name": "Authorization",
-            "description": "Generate access token in the settings page of your user account.",
+            "description": "Authenticate with a CTFd API token.",
         },
     },
     security=["AccessToken"],
@@ -69,7 +75,6 @@ CTFd_API_v1.add_namespace(pages_namespace, "/pages")
 CTFd_API_v1.add_namespace(unlocks_namespace, "/unlocks")
 CTFd_API_v1.add_namespace(tokens_namespace, "/tokens")
 CTFd_API_v1.add_namespace(comments_namespace, "/comments")
-CTFd_API_v1.add_namespace(shares_namespace, "/shares")
 CTFd_API_v1.add_namespace(brackets_namespace, "/brackets")
 CTFd_API_v1.add_namespace(exports_namespace, "/exports")
 CTFd_API_v1.add_namespace(solutions_namespace, "/solutions")

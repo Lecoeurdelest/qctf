@@ -9,7 +9,7 @@ from alembic import op
 from sqlalchemy.sql import column, table
 
 from CTFd.models import db
-from CTFd.utils.email import (
+from CTFd.constants.email import (
     DEFAULT_PASSWORD_RESET_BODY,
     DEFAULT_PASSWORD_RESET_SUBJECT,
     DEFAULT_SUCCESSFUL_REGISTRATION_EMAIL_BODY,

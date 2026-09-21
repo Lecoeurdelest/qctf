@@ -2,16 +2,19 @@
 
 Builds the checked-in upstream CTFd 3.8.7 source with qctf plugins. Startup waits for the database,
 runs migrations, bootstraps a preset development administrator idempotently,
-and starts Gunicorn. CTFd/Flask is retained; its rendered UI is disabled by
-the plugin and is never the gateway's product UI. Bundled core, core-deprecated,
-and admin themes are removed from the vendored source and runtime image. The
-empty theme directory is retained for upstream discovery compatibility.
+and starts Gunicorn. React in `apps/web` is the only product UI. The vendored
+backend has no CTFd page controllers, themes, forms, template loaders, plugin
+HTML/JS assets, UI extension hooks, or social-share page renderer. Flask,
+CTFd domain models, JSON APIs, protected file downloads, migrations and
+backend plugins remain. API challenge/flag responses contain data only.
 
 Bootstrap sets defaults only when setup is incomplete, refuses to promote an
 existing non-admin email, and does not overwrite configured competition data.
 All credentials come from ignored runtime `.env` values. Test first-run
 behavior with `make test-bootstrap`, which uses a disposable SQLite container
-without changing the running MariaDB. MariaDB remains the supported dev store.
+without changing the running MariaDB. The same probe verifies the real app
+route map, JSON errors, challenge/flag CRUD, file upload/download, solves,
+scoreboard and statistics using disposable fixtures. MariaDB remains the supported dev store.
 See `UPSTREAM.md` for the source provenance and customization workflow.
 
 ## Python dependencies

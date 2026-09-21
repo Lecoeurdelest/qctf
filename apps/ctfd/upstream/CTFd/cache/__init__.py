@@ -3,7 +3,7 @@ from hashlib import md5
 from time import monotonic_ns
 
 from flask import current_app, request
-from flask_caching import Cache, make_template_fragment_key
+from flask_caching import Cache
 
 
 class CTFdCache(Cache):
@@ -133,7 +133,6 @@ def clear_config():
 def clear_standings():
     from CTFd.api import api
     from CTFd.api.v1.scoreboard import ScoreboardDetail, ScoreboardList
-    from CTFd.constants.static import CacheKeys
     from CTFd.models import Teams, Users  # noqa: I001
     from CTFd.utils.scoreboard import get_scoreboard_detail
     from CTFd.utils.scores import get_standings, get_team_standings, get_user_standings
@@ -173,9 +172,6 @@ def clear_standings():
     cache.delete(make_cache_key(path=api.name + "." + ScoreboardDetail.endpoint))
     cache.delete_memoized(ScoreboardList.get)
     cache.delete_memoized(ScoreboardDetail.get)
-
-    # Clear out scoreboard templates
-    cache.delete(make_template_fragment_key(CacheKeys.PUBLIC_SCOREBOARD_TABLE))
 
 
 def clear_challenges():

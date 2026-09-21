@@ -1,7 +1,5 @@
 import re
 
-from CTFd.plugins import register_plugin_assets_directory
-
 
 class FlagException(Exception):
     def __init__(self, message):
@@ -13,7 +11,6 @@ class FlagException(Exception):
 
 class BaseFlag(object):
     name = None
-    templates = {}
 
     @staticmethod
     def compare(self, saved, provided):
@@ -22,10 +19,6 @@ class BaseFlag(object):
 
 class CTFdStaticFlag(BaseFlag):
     name = "static"
-    templates = {  # Nunjucks templates used for key editing & viewing
-        "create": "/plugins/flags/assets/static/create.html",
-        "update": "/plugins/flags/assets/static/edit.html",
-    }
 
     @staticmethod
     def compare(chal_key_obj, provided):
@@ -47,10 +40,6 @@ class CTFdStaticFlag(BaseFlag):
 
 class CTFdRegexFlag(BaseFlag):
     name = "regex"
-    templates = {  # Nunjucks templates used for key editing & viewing
-        "create": "/plugins/flags/assets/regex/create.html",
-        "update": "/plugins/flags/assets/regex/edit.html",
-    }
 
     @staticmethod
     def compare(chal_key_obj, provided):
@@ -80,4 +69,4 @@ def get_flag_class(class_id):
 
 
 def load(app):
-    register_plugin_assets_directory(app, base_path="/plugins/flags/assets/")
+    pass

@@ -30,8 +30,8 @@ a public production deployment.
 - React routes: overview, challenges, scoreboard, KoTH status, control center,
   and development token access. Challenge/score lists use the real CTFd API.
 - CTFd 3.8.7 + Flask source is checked into `apps/ctfd/upstream/` and built
-  locally, so core behavior can be customized. Original rendered UI routes
-  are disabled; React handles product routes.
+  locally, so core behavior can be customized. Original UI controllers, themes, forms and plugin assets
+  are removed; React handles product routes.
 - Server-derived user/team identity and admin-only runtime inspection.
 - Internal Go HTTP service with liveness, explicit non-readiness, and service
   authentication. No Kubernetes client, workload, or cluster credentials yet.

@@ -1,6 +1,6 @@
 import functools
 
-from flask import abort, redirect, render_template, request, url_for
+from flask import abort
 
 from CTFd.constants.config import (
     AccountVisibilityTypes,
@@ -24,24 +24,13 @@ def check_score_visibility(f):
             if authed():
                 return f(*args, **kwargs)
             else:
-                if request.is_json:
-                    abort(403)
-                else:
-                    return redirect(url_for("auth.login", next=request.full_path))
+                abort(403)
 
         elif v == ScoreVisibilityTypes.HIDDEN:
             if is_admin():
                 return f(*args, **kwargs)
             else:
-                if request.is_json:
-                    abort(403)
-                else:
-                    return (
-                        render_template(
-                            "errors/403.html", error="Scores are currently hidden"
-                        ),
-                        403,
-                    )
+                abort(403, description="Scores are currently hidden")
 
         elif v == ScoreVisibilityTypes.ADMINS:
             if is_admin():
@@ -63,25 +52,12 @@ def check_challenge_visibility(f):
             if authed():
                 return f(*args, **kwargs)
             else:
-                if request.is_json:
-                    abort(403)
-                else:
-                    return redirect(url_for("auth.login", next=request.full_path))
+                abort(403)
 
         elif v == ChallengeVisibilityTypes.ADMINS:
             if is_admin():
                 return f(*args, **kwargs)
-            else:
-                if authed():
-                    if request.is_json:
-                        abort(403)
-                    else:
-                        abort(
-                            403,
-                            description="Challenge Visibility is set to Admins Only",
-                        )
-                else:
-                    return redirect(url_for("auth.login", next=request.full_path))
+            abort(403)
 
     return _check_challenge_visibility
 
@@ -97,10 +73,7 @@ def check_account_visibility(f):
             if authed():
                 return f(*args, **kwargs)
             else:
-                if request.is_json:
-                    abort(403)
-                else:
-                    return redirect(url_for("auth.login", next=request.full_path))
+                abort(403)
 
         elif v == AccountVisibilityTypes.ADMINS:
             if is_admin():

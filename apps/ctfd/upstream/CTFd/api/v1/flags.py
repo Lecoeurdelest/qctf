@@ -119,7 +119,6 @@ class FlagTypes(Resource):
             flag_class = FLAG_CLASSES.get(class_id)
             response[class_id] = {
                 "name": flag_class.name,
-                "templates": flag_class.templates,
             }
         return {"success": True, "data": response}
 
@@ -129,7 +128,7 @@ class FlagType(Resource):
     @admins_only
     def get(self, type_name):
         flag_class = get_flag_class(type_name)
-        response = {"name": flag_class.name, "templates": flag_class.templates}
+        response = {"name": flag_class.name}
         return {"success": True, "data": response}
 
 
@@ -153,8 +152,6 @@ class Flag(Resource):
 
         if response.errors:
             return {"success": False, "errors": response.errors}, 400
-
-        response.data["templates"] = get_flag_class(flag.type).templates
 
         return {"success": True, "data": response.data}
 

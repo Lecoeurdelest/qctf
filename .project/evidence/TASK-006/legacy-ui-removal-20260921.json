@@ -1,0 +1,24 @@
+{
+  "scope": "User-requested physical removal of legacy CTFd UI",
+  "date": "2026-09-21",
+  "checks": {
+    "docker_build": "passed",
+    "compose_start": "healthy",
+    "plugin_contract_tests": {
+      "passed": 11
+    },
+    "gateway_smoke": {
+      "passed": 13
+    },
+    "disposable_bootstrap_probe": "passed: repeated bootstrap, route/asset absence, JSON authorization errors, standard/dynamic challenges, static/regex flags, upload/download, solves, scoreboard, statistics, banned/password-change accounts, setup readiness",
+    "python_lint": "ruff F passed",
+    "dependency_lock": "uv lock --check passed",
+    "diff_whitespace": "git diff --check passed"
+  },
+  "limits": [
+    "Full retained upstream test suite was not run.",
+    "Historical database migrations and backend content fields retained.",
+    "No production login or administration UI added."
+  ],
+  "documentation": "apps/ctfd/UPSTREAM.md"
+}

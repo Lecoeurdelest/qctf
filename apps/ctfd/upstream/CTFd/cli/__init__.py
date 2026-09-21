@@ -3,7 +3,7 @@ import shutil
 from pathlib import Path
 
 import click
-from flask import Blueprint, current_app
+from flask import Blueprint
 
 from CTFd.utils import get_config as get_config_util
 from CTFd.utils import set_config as set_config_util
@@ -13,22 +13,6 @@ from CTFd.utils.exports import import_ctf as import_ctf_util
 from CTFd.utils.exports import set_import_end_time, set_import_error
 
 _cli = Blueprint("cli", __name__)
-
-
-def jsenums():
-    import json
-    import os
-
-    from CTFd.constants import JS_ENUMS
-
-    path = os.path.join(current_app.root_path, "themes/core/assets/js/constants.js")
-
-    with open(path, "w+") as f:
-        for k, v in JS_ENUMS.items():
-            f.write("const {} = Object.freeze({});".format(k, json.dumps(v)))
-
-
-BUILD_COMMANDS = {"jsenums": jsenums}
 
 
 @_cli.cli.command("get_config")
@@ -42,13 +26,6 @@ def get_config(key):
 @click.argument("value")
 def set_config(key, value):
     print(set_config_util(key, value).value)
-
-
-@_cli.cli.command("build")
-@click.argument("cmd")
-def build(cmd):
-    cmd = BUILD_COMMANDS.get(cmd)
-    cmd()
 
 
 @_cli.cli.command("export_ctf")

@@ -23,17 +23,26 @@ namespaces where possible.
 | `/api/qctf/v1/koth/arenas/{id}/claims` | Team required; 501 |
 | `/files/*` | CTFd download endpoint; per-file policy stays in CTFd |
 
-The backend accepts only `/api/` and `/files/` paths. Its HTML, setup, login,
-admin and theme paths return JSON 404. UI assets remain inside the upstream
-image to avoid deleting internal dependencies, but are not product surfaces.
-Upstream plugin HTML/JS assets are not exposed; React must implement its own
-challenge views. No physical Flask deletion is attempted.
+The backend accepts only `/api/` and `/files/` paths. Legacy HTML, setup,
+login, admin, theme and plugin asset paths return JSON 404. Their controllers,
+forms, themes, template loaders and HTML/JS assets are physically removed.
+Flask-RESTX Swagger UI asset registration is disabled; JSON OpenAPI remains.
+React implements challenge views and administration.
+
+Challenge list/detail/type and flag type/detail responses no longer include
+`template`, `templates`, `script`, `scripts`, rendered `view` or rendered
+`create` fields. Challenge `type_data` retains its `id` and `name`. Account
+and statistics links refer to JSON API resources rather than removed page
+controllers. `/api/v1/shares` is removed with its legacy social-share renderer.
+Backend scoring, challenge types, flag comparison and protected downloads
+remain. Historical database migrations and content/Markdown fields remain
+for data compatibility; they do not enable server-rendered UI.
 
 ## Authentication
 
 Clients send `Authorization: Token <ctfd-token>` and
-`Content-Type: application/json`, including for GET requests: the upstream
-token hook uses JSON request detection. Do not use Bearer for CTFd tokens.
+`Content-Type: application/json` for JSON bodies. Token authentication also
+works on GETs without Content-Type and multipart file uploads. Do not use Bearer for CTFd tokens.
 Bearer is reserved for the separate internal orchestrator service credential.
 
 The scaffold has token-entry development access only. Tokens remain in React

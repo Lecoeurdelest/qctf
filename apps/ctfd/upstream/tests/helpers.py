@@ -5,9 +5,7 @@ import string
 import uuid
 from collections import namedtuple
 from contextlib import contextmanager
-from unittest.mock import Mock, patch
 
-import requests
 from flask.testing import FlaskClient
 from freezegun import freeze_time
 from sqlalchemy.engine.url import make_url
@@ -17,7 +15,6 @@ from werkzeug.datastructures import Headers
 from CTFd import create_app
 from CTFd.cache import cache, clear_challenges, clear_ratings, clear_standings
 from CTFd.config import TestingConfig
-from CTFd.constants.themes import DEFAULT_THEME
 from CTFd.models import (
     Awards,
     Brackets,
@@ -133,15 +130,11 @@ def create_ctfd(
     enable_plugins=False,
     application_root="/",
     config=TestingConfig,
-    ctf_theme=None,
 ):
     if enable_plugins:
         config.SAFE_MODE = False
     else:
         config.SAFE_MODE = True
-
-    if ctf_theme is None:
-        ctf_theme = DEFAULT_THEME
 
     config.APPLICATION_ROOT = application_root
     url = make_url(config.SQLALCHEMY_DATABASE_URI)
@@ -161,38 +154,7 @@ def create_ctfd(
             email=email,
             password=password,
             user_mode=user_mode,
-            ctf_theme=ctf_theme,
         )
-    return app
-
-
-def setup_ctfd(
-    app,
-    ctf_name="CTFd",
-    ctf_description="CTF description",
-    name="admin",
-    email="admin@examplectf.com",
-    password="password",
-    user_mode="users",
-    ctf_theme=None,
-):
-    if ctf_theme is None:
-        ctf_theme = DEFAULT_THEME
-    with app.app_context():
-        with app.test_client() as client:
-            client.get("/setup")  # Populate session with nonce
-            with client.session_transaction() as sess:
-                data = {
-                    "ctf_name": ctf_name,
-                    "ctf_description": ctf_description,
-                    "name": name,
-                    "email": email,
-                    "password": password,
-                    "user_mode": user_mode,
-                    "nonce": sess.get("nonce"),
-                    "ctf_theme": ctf_theme,
-                }
-            client.post("/setup", data=data)
     return app
 
 
@@ -201,118 +163,6 @@ def destroy_ctfd(app):
         gc.collect()  # Garbage collect (necessary in the case of dataset freezes to clean database connections)
         cache.clear()
         drop_database(app.config["SQLALCHEMY_DATABASE_URI"])
-
-
-def register_user(
-    app,
-    name="user",
-    email="user@examplectf.com",
-    password="password",
-    bracket_id=None,
-    raise_for_error=True,
-):
-    with app.app_context():
-        with app.test_client() as client:
-            client.get("/register")
-            with client.session_transaction() as sess:
-                data = {
-                    "name": name,
-                    "email": email,
-                    "password": password,
-                    "nonce": sess.get("nonce"),
-                }
-            if bracket_id:
-                data["bracket_id"] = bracket_id
-            client.post("/register", data=data)
-            if raise_for_error:
-                with client.session_transaction() as sess:
-                    assert sess["id"]
-                    assert sess["nonce"]
-                    assert sess["hash"]
-
-
-def register_team(app, name="team", password="password", raise_for_error=True):
-    with app.app_context():
-        with app.test_client() as client:
-            client.get("/team")
-            with client.session_transaction() as sess:
-                data = {"name": name, "password": password, "nonce": sess.get("nonce")}
-            r = client.post("/teams/new", data=data)
-            if raise_for_error:
-                assert r.status_code == 302
-            return client
-
-
-def login_as_user(app, name="user", password="password", raise_for_error=True):
-    with app.app_context():
-        with app.test_client() as client:
-            client.get("/login")
-            with client.session_transaction() as sess:
-                data = {"name": name, "password": password, "nonce": sess.get("nonce")}
-            client.post("/login", data=data)
-            if raise_for_error:
-                with client.session_transaction() as sess:
-                    assert sess["id"]
-                    assert sess["nonce"]
-                    assert sess["hash"]
-            return client
-
-
-def login_with_mlc(
-    app,
-    name="user",
-    scope="profile%20team",
-    email="user@examplectf.com",
-    oauth_id=1337,
-    team_name="TestTeam",
-    team_oauth_id=1234,
-    raise_for_error=True,
-):
-    with app.test_client() as client, patch.object(
-        requests, "get"
-    ) as fake_get_request, patch.object(requests, "post") as fake_post_request:
-        client.get("/login")
-        with client.session_transaction() as sess:
-            nonce = sess["nonce"]
-
-            redirect_url = "{endpoint}?response_type=code&client_id={client_id}&scope={scope}&state={state}".format(
-                endpoint=app.config["OAUTH_AUTHORIZATION_ENDPOINT"],
-                client_id=app.config["OAUTH_CLIENT_ID"],
-                scope=scope,
-                state=nonce,
-            )
-
-        r = client.get("/oauth", follow_redirects=False)
-        assert r.location == redirect_url
-
-        fake_post_response = Mock()
-        fake_post_request.return_value = fake_post_response
-        fake_post_response.status_code = 200
-        fake_post_response.json = lambda: {"access_token": "fake_mlc_access_token"}
-
-        fake_get_response = Mock()
-        fake_get_request.return_value = fake_get_response
-        fake_get_response.status_code = 200
-        fake_get_response.json = lambda: {
-            "id": oauth_id,
-            "name": name,
-            "email": email,
-            "team": {"id": team_oauth_id, "name": team_name},
-        }
-
-        client.get(
-            "/redirect?code={code}&state={state}".format(
-                code="mlc_test_code", state=nonce
-            ),
-            follow_redirects=False,
-        )
-
-        if raise_for_error:
-            with client.session_transaction() as sess:
-                assert sess["id"]
-                assert sess["nonce"]
-                assert sess["hash"]
-        return client
 
 
 def get_scores(user):
@@ -622,3 +472,73 @@ def simulate_user_activity(db, user):
 
     gen_unlock(db, user_id=user.id, target=hint.id, type="hints")
     gen_solve(db, user_id=user.id, challenge_id=challenge.id, provided=flag.content)
+
+
+def setup_ctfd(
+    app,
+    ctf_name="CTFd",
+    ctf_description="CTF description",
+    name="admin",
+    email="admin@examplectf.com",
+    password="password",
+    user_mode="users",
+):
+    from CTFd.constants.setup import DEFAULTS
+    from CTFd.models import db
+
+    with app.app_context():
+        for key, value in {
+            **DEFAULTS,
+            "ctf_name": ctf_name,
+            "ctf_description": ctf_description,
+            "user_mode": user_mode,
+            "setup": True,
+        }.items():
+            set_config(key, value)
+        db.session.add(
+            Users(name=name, email=email, password=password, type="admin", hidden=True)
+        )
+        db.session.commit()
+    return app
+
+
+def register_user(
+    app,
+    name="user",
+    email="user@examplectf.com",
+    password="password",
+    bracket_id=None,
+    raise_for_error=True,
+):
+    from CTFd.models import db
+
+    with app.app_context():
+        db.session.add(
+            Users(name=name, email=email, password=password, bracket_id=bracket_id)
+        )
+        db.session.commit()
+
+
+def register_team(app, name="team", password="password", raise_for_error=True):
+    from CTFd.models import db
+
+    with app.app_context():
+        db.session.add(Teams(name=name, password=password))
+        db.session.commit()
+    return app.test_client()
+
+
+def login_as_user(app, name="user", password="password", raise_for_error=True):
+    from CTFd.utils.crypto import verify_password
+    from CTFd.utils.security.csrf import generate_nonce
+    from CTFd.utils.security.signing import hmac
+
+    client = app.test_client()
+    with app.app_context(), client.session_transaction() as sess:
+        user = Users.query.filter_by(name=name).first()
+        valid = user is not None and verify_password(password, user.password)
+        if raise_for_error:
+            assert valid
+        if valid:
+            sess.update(id=user.id, nonce=generate_nonce(), hash=hmac(user.password))
+    return client

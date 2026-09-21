@@ -1,5 +1,4 @@
-from CTFd.constants import JinjaEnum, JSEnum, RawEnum
-from tests.helpers import create_ctfd, destroy_ctfd
+from CTFd.constants import RawEnum
 
 
 def test_RawEnum():
@@ -21,32 +20,3 @@ def test_RawEnum():
     assert str(Numbers.ONE) == "1"
     assert sorted(Colors.keys()) == sorted(["RED", "GREEN", "BLUE"])
     assert sorted(Colors.values()) == sorted(["red", "green", "blue"])
-
-
-def test_JSEnum():
-    import json
-
-    from CTFd.constants import JS_ENUMS  # noqa: I001
-
-    @JSEnum
-    class Colors(str, RawEnum):
-        RED = "red"
-        GREEN = "green"
-        BLUE = "blue"
-
-    assert JS_ENUMS["Colors"] == {"RED": "red", "GREEN": "green", "BLUE": "blue"}
-    assert json.dumps(JS_ENUMS)
-
-
-def test_JinjaEnum():
-    @JinjaEnum
-    class Colors(str, RawEnum):
-        RED = "red"
-        GREEN = "green"
-        BLUE = "blue"
-
-    app = create_ctfd()
-    with app.app_context():
-        assert app.jinja_env.globals["Colors"] is Colors
-        assert app.jinja_env.globals["Colors"].RED == "red"
-    destroy_ctfd(app)

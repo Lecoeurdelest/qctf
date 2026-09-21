@@ -1,6 +1,6 @@
 import functools
 
-from flask import abort, jsonify, redirect, request, url_for
+from flask import abort, jsonify, request
 from flask_babel import gettext
 
 from CTFd.cache import cache
@@ -33,7 +33,7 @@ def during_ctf_time_only(f):
                     abort(403, description=error)
             if ctf_started() is False:
                 if is_teams_mode() and get_current_team() is None:
-                    return redirect(url_for("teams.private", next=request.full_path))
+                    abort(403)
                 else:
                     error = gettext(
                         "%(ctf_name)s has not started yet", ctf_name=config.ctf_name()
@@ -49,7 +49,7 @@ def require_authentication_if_config(config_key):
         def __require_authentication_if_config(*args, **kwargs):
             value = get_config(config_key)
             if value and current_user.authed():
-                return redirect(url_for("auth.login", next=request.full_path))
+                abort(403)
             else:
                 return f(*args, **kwargs)
 
@@ -73,10 +73,7 @@ def require_verified_emails(f):
                     current_user.is_admin() is False
                     and current_user.is_verified() is False
                 ):  # User is not confirmed
-                    if request.is_json:
-                        abort(403)
-                    else:
-                        return redirect(url_for("auth.confirm"))
+                    abort(403)
         return f(*args, **kwargs)
 
     return _require_verified_emails
@@ -94,10 +91,7 @@ def authed_only(f):
         if authed():
             return f(*args, **kwargs)
         else:
-            if request.is_json or request.accept_mimetypes.best == "text/event-stream":
-                abort(403)
-            else:
-                return redirect(url_for("auth.login", next=request.full_path))
+            abort(403)
 
     return authed_only_wrapper
 
@@ -114,10 +108,7 @@ def registered_only(f):
         if authed():
             return f(*args, **kwargs)
         else:
-            if request.is_json or request.accept_mimetypes.best == "text/event-stream":
-                abort(403)
-            else:
-                return redirect(url_for("auth.register", next=request.full_path))
+            abort(403)
 
     return _registered_only
 
@@ -134,10 +125,7 @@ def admins_only(f):
         if is_admin():
             return f(*args, **kwargs)
         else:
-            if request.is_json:
-                abort(403)
-            else:
-                return redirect(url_for("auth.login", next=request.full_path))
+            abort(403)
 
     return admins_only_wrapper
 
@@ -148,10 +136,7 @@ def require_team(f):
         if is_teams_mode():
             team = get_current_team()
             if team is None:
-                if request.is_json:
-                    abort(403)
-                else:
-                    return redirect(url_for("teams.private", next=request.full_path))
+                abort(403)
             return f(*args, **kwargs)
         else:
             abort(404)
@@ -193,8 +178,6 @@ def ratelimit(method="POST", limit=50, interval=300, key_prefix="rl"):
 
 
 def require_complete_profile(f):
-    from CTFd.utils.helpers import info_for
-
     @functools.wraps(f)
     def _require_complete_profile(*args, **kwargs):
         if authed():
@@ -204,11 +187,7 @@ def require_complete_profile(f):
                 user = get_current_user()
 
                 if user.filled_all_required_fields is False:
-                    info_for(
-                        "views.settings",
-                        "Please fill out all required profile fields before continuing",
-                    )
-                    return redirect(url_for("views.settings"))
+                    abort(403)
 
                 if is_teams_mode():
                     team = get_current_team()

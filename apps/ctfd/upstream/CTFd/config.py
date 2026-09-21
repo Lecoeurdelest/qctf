@@ -242,15 +242,7 @@ class ServerConfig(object):
     # === OPTIONAL ===
     REVERSE_PROXY: Union[str, bool] = empty_str_cast(config_ini["optional"]["REVERSE_PROXY"], default=False)
 
-    TEMPLATES_AUTO_RELOAD: bool = process_boolean_str(empty_str_cast(config_ini["optional"]["TEMPLATES_AUTO_RELOAD"], default=True))
-
-    THEME_FALLBACK: bool = process_boolean_str(empty_str_cast(config_ini["optional"]["THEME_FALLBACK"], default=True))
-
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = process_boolean_str(empty_str_cast(config_ini["optional"]["SQLALCHEMY_TRACK_MODIFICATIONS"], default=False))
-
-    SWAGGER_UI: bool = process_boolean_str(empty_str_cast(config_ini["optional"]["SWAGGER_UI"], default=False))
-
-    SWAGGER_UI_ENDPOINT: str = "/" if SWAGGER_UI else None
 
     UPDATE_CHECK: bool = process_boolean_str(empty_str_cast(config_ini["optional"]["UPDATE_CHECK"], default=True))
 
