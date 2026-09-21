@@ -3,7 +3,9 @@
 Builds the checked-in upstream CTFd 3.8.7 source with qctf plugins. Startup waits for the database,
 runs migrations, bootstraps a preset development administrator idempotently,
 and starts Gunicorn. CTFd/Flask is retained; its rendered UI is disabled by
-the plugin and is never the gateway's product UI.
+the plugin and is never the gateway's product UI. Bundled core, core-deprecated,
+and admin themes are removed from the vendored source and runtime image. The
+empty theme directory is retained for upstream discovery compatibility.
 
 Bootstrap sets defaults only when setup is incomplete, refuses to promote an
 existing non-admin email, and does not overwrite configured competition data.
