@@ -41,3 +41,7 @@ stack running. Vite proxies APIs to port 8088. Run `make dev` to rebuild contain
 
 See [project.yaml](project.yaml) for the plan, [tasks](docs/task/README.md)
 for progress, and [technical docs](docs/technical/) for architecture.
+
+## License
+
+Copyright (c) 2026 Lecoeurdelest. All rights reserved. See [LICENSE](LICENSE).
